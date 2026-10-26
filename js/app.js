@@ -49,6 +49,7 @@
       else t.removeAttribute('aria-current');
     });
     document.body.dataset.view = route;
+    if (route !== 'read') document.body.classList.remove('bar-collapsed');
     // 同一时刻只允许存在一份词卡（阅读页 #inspector 与词库页 #dict-detail 都含 #word-card）
     if (route !== 'read' && DR.reader) DR.reader.clearSelection();
     if (route !== 'dict' && DR.dictionary && DR.dictionary.closeDetail) DR.dictionary.closeDetail();

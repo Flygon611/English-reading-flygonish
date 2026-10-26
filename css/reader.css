@@ -306,6 +306,24 @@
   .reader__head-inner, .prose { padding-left: 20px; padding-right: 20px; }
   .reader__hint { display: none; }
   .reader__meta .sep:last-of-type { display: none; }
+
+  /* 手机上把文章头压紧：标题小一号、作者/章节副标题收掉，给正文留高度 */
+  .reader__head-inner { padding-top: 10px; padding-bottom: 8px; }
+  .reader__head-top { flex-direction: column; align-items: flex-start; margin-bottom: 8px; gap: 6px; }
+  .reader__head-top .eyebrow { white-space: nowrap; }
+  .reader__tools { width: 100%; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; }
+  .reader__tools .btn { height: 28px; padding: 0 9px; font-size: 11.5px; flex: 0 0 auto; }
+  .reader__title { font-size: 20px; margin-bottom: 4px; }
+  .reader__author { margin: -2px 0 8px; font-size: 12px; }
+  .chapter-nav { margin-bottom: 8px; padding: 6px 8px; }
+  .chapter-nav__row { gap: 5px; }
+  .chapter-nav__sub { display: none; }
+  .chapter-nav__select { height: 26px; font-size: 11.5px; }
+  .reader__meta { gap: 5px; font-size: 10px; }
+  .prose { padding-top: 20px; padding-bottom: 120px; }
+
+  /* 沉浸阅读：向下滚时连文章头一起收起，只留顶部细进度条 */
+  body.bar-collapsed .reader__head { display: none; }
 }
 
 /* ---------- 电子书：作者行 / 章节目录 ---------- */

@@ -270,3 +270,21 @@ node tools/ui-test.js --selftest                 :: 验证测试助手/事件/�
 - 跨设备路径：新设备打开站点 → 设置 → 导入备份 → 书架出现书目（`kind:'book'`）→ 打开即落回上次章节。
 - 测试 `tools/test-backup.js`（11 项）：导入 epub → 读到第 3 章 → 打包 → 清空本地 → 导入 → 校验书目/正文/章节位置。
   Animal Farm 备份 167 KB；哈利波特合订本备份约 7 MB（百万词正文）。
+
+## 8.9 Lead 追加：手机端沉浸阅读 + 进度/标注恢复（2026-10-26 16:4x）
+
+用户真机反馈三个问题，逐条修：
+
+1. **顶栏太高**：手机端（≤860px）向下滚动 > 40px 时给 `body` 加 `bar-collapsed`，顶栏 `flex-basis` 收 0、
+   文章头 `display:none`，屏幕顶部只留 3px `#read-progressbar`；向上滚或回到顶部（scrollTop ≤ 8）自动恢复。
+   同时把移动端文章头压紧：eyebrow 与工具行纵向排列、工具行横向滚动不换行、标题 20px、作者/章节副标题收掉
+   （head 高度 237px → 132px）。
+2. **手机端进度不积累**：`onScroll` 改为 `scrollInfo()`——内部滚动容器与整页滚动两套都认（真机地址栏收起时
+   可能滚的是 document）；电子书滚动同时 `upsertArticle({progress, chapterIndex})`，不再只写 progress。
+3. **刷新后要先点词才显示灰色标记**：根因是词库懒加载——`applyMarks()` 在 dict.js 就绪前查不到 entry。
+   现在 `DR.dict.onFull()` 里补一次 `applyMarks()`，刷新后词库加载完标记自动出现。
+
+新测试 `tools/test-mobile-read.js`（390×844 移动视口，12 项）：文章头高度、点词标记、滚动收起顶栏、
+进度条宽度、进度百分比、回顶恢复、刷新后标记恢复（不点词）、刷新后滚动位置、电子书同章同位置恢复。
+另回归：`browser-check` 6 路由 0 失败 / `ui-test` 235 断言 0 失败 / `quiz-test` 167 通过。
+截图：`preview/ui-18-mobile-top.png`、`preview/ui-18-mobile-immersive.png`。

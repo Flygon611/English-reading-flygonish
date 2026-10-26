@@ -54,6 +54,13 @@
     q('#library-search').addEventListener('input', DR.dom.debounce(renderLibrary, 120));
     els.body.addEventListener('click', onBodyClick);
     els.scroll.addEventListener('scroll', DR.dom.debounce(onScroll, 260));
+    window.addEventListener('scroll', DR.dom.debounce(onScroll, 260), { passive: true });
+    window.addEventListener('resize', DR.dom.debounce(function () {
+      if (state.rendered) updateProgressBar((state.article && state.article.progress) || 0);
+      if (!isMobile()) setBarCollapsed(false);
+    }, 200));
+    // 刷新后词库是懒加载的：加载完要重画一次灰色「查过」标记，否则要等点词才出现
+    if (DR.dict && DR.dict.onFull) DR.dict.onFull(function () { if (state.rendered) applyMarks(); });
     els.body.addEventListener('mouseup', function () {
       var sel = String(window.getSelection ? window.getSelection() : '');
       if (sel && sel.length > 40) return; // 用户在选择文本，不要抢
@@ -163,6 +170,7 @@
   }
 
   function show() {
+    setBarCollapsed(false);
     var a = activeArticle();
     if (a) {
       if (!state.article || state.article.id !== a.id || !state.rendered) openArticle(a.id);
@@ -177,6 +185,7 @@
     var a = DR.store.getArticle(id);
     if (!a) { renderWelcome(); return; }
     state.article = a;
+    resetReadingChrome();
     state.rendered = true;
     state.welcome = false;
     state.analyses = new Map();
@@ -240,11 +249,12 @@
     DR.card.closeInspector();
     renderHead(a);
     renderBody(ch.text || '');
-    els.scroll.scrollTop = opts.restore ? (state.bookScroll[ci] || 0) : 0;
+    els.scroll.scrollTop = opts.restore ? chapterRestoreTop(ci) : 0;
     a.chapterIndex = ci;
     DR.store.upsertArticle({ id: a.id, chapterIndex: ci });
     document.title = (ch.title ? ch.title + ' · ' : '') + (a.title || '') + ' · 深读';
     updateBookProgress();
+    updateProgressBar(a.progress || 0);
   }
 
   function gotoChapter(ci) {
@@ -305,6 +315,7 @@
     state.article = null;
     state.rendered = false;
     state.welcome = true;
+    resetReadingChrome();
     document.title = '深读 DeepRead · 英语精读';
     DR.dom.clear(els.head);
     DR.dom.clear(els.body);
@@ -734,27 +745,105 @@
   }
 
   /* ---------------- 滚动进度 ---------------- */
+  var MOBILE_MQ = window.matchMedia ? window.matchMedia('(max-width: 860px)') : null;
+  var barCollapsed = false;
+  var lastScrollTop = 0;
+
+  function isMobile() { return MOBILE_MQ ? MOBILE_MQ.matches : window.innerWidth <= 860; }
+
+  /* 真机上有时滚的是整页而不是内部容器：两边都认 */
+  function scrollInfo() {
+    var el = els.scroll;
+    var max = el.scrollHeight - el.clientHeight;
+    if (max > 4) return { top: el.scrollTop, max: max };
+    var doc = document.scrollingElement || document.documentElement;
+    return {
+      top: window.scrollY || doc.scrollTop || 0,
+      max: Math.max(0, doc.scrollHeight - window.innerHeight)
+    };
+  }
+
+  function setBarCollapsed(on) {
+    if (barCollapsed === on) return;
+    barCollapsed = on;
+    document.body.classList.toggle('bar-collapsed', on);
+  }
+
+  function updateProgressBar(ratio) {
+    var bar = q('#read-progressbar');
+    if (!bar) return;
+    var on = isMobile() && state.rendered && !state.welcome && !!state.article;
+    bar.classList.toggle('is-on', on);
+    var fill = bar.firstElementChild || bar.querySelector('i');
+    var pct = Math.round(Math.max(0, Math.min(1, ratio)) * 1000) / 10;
+    if (fill) fill.style.width = pct + '%';
+  }
+
+  /* 切文章 / 回首页 / 换路由时，把顶栏和进度条复位 */
+  function resetReadingChrome() {
+    lastScrollTop = 0;
+    setBarCollapsed(false);
+    updateProgressBar(0);
+  }
+
   function onScroll() {
     var a = state.article;
     if (!a) return;
-    var max = els.scroll.scrollHeight - els.scroll.clientHeight;
-    var p = max > 0 ? Math.min(1, Math.max(0, els.scroll.scrollTop / max)) : 0;
+    var si = scrollInfo();
+    var p = si.max > 0 ? Math.min(1, Math.max(0, si.top / si.max)) : 0;
     var shown = p;
     if (state.chapters && state.chapters.length) {
       shown = (state.ci + p) / state.chapters.length;     // 整本书的进度
-      state.bookScroll[state.ci] = els.scroll.scrollTop;
+      state.bookScroll[state.ci] = si.top;
       a.progress = shown;
     }
     var num = q('#read-progress');
     if (num) num.textContent = Math.round(shown * 100) + '%';
     var bar = q('.library__item.is-active .library__bar i');
     if (bar) bar.style.width = Math.round(shown * 100) + '%';
+    updateProgressBar(shown);
+
+    // 手机阅读：向下滚收起顶栏，向上滚或回到顶部再放出来
+    if (isMobile()) {
+      if (si.top > 40 && si.top > lastScrollTop + 6) setBarCollapsed(true);
+      else if (si.top < lastScrollTop - 6 || si.top <= 8) setBarCollapsed(false);
+    } else {
+      setBarCollapsed(false);
+    }
+    lastScrollTop = si.top;
+
     clearTimeout(scrollSave);
-    scrollSave = setTimeout(function () { DR.store.touchProgress(a.id, shown); }, 500);
+    scrollSave = setTimeout(function () {
+      // 电子书顺便把当前章也落盘，刷新后能回到同一章、同一位置
+      if (state.chapters && state.chapters.length) {
+        DR.store.upsertArticle({ id: a.id, progress: shown, chapterIndex: state.ci });
+      } else {
+        DR.store.touchProgress(a.id, shown);
+      }
+    }, 500);
   }
+
   function restoreScroll(a) {
+    var p = Math.max(0, Math.min(1, a.progress || 0));
+    var el = els.scroll;
+    var max = el.scrollHeight - el.clientHeight;
+    if (max > 4) { el.scrollTop = Math.round(p * max); return; }
+    var doc = document.scrollingElement || document.documentElement;
+    var wmax = Math.max(0, doc.scrollHeight - window.innerHeight);
+    window.scrollTo(0, Math.round(p * wmax));
+  }
+
+  /* 电子书第 ci 章该滚到哪：优先本会话记住的位置，其次按整本书进度反算 */
+  function chapterRestoreTop(ci) {
+    var a = state.article;
+    if (!a || !state.chapters) return 0;
+    var saved = state.bookScroll[ci];
+    if (typeof saved === 'number' && saved > 0) return saved;
+    var frac = (a.progress || 0) * state.chapters.length - ci;
+    frac = Math.max(0, Math.min(1, frac));
+    if (frac <= 0) return 0;
     var max = els.scroll.scrollHeight - els.scroll.clientHeight;
-    els.scroll.scrollTop = Math.round((a.progress || 0) * Math.max(0, max));
+    return Math.round(frac * Math.max(0, max));
   }
 
   /* ---------------- 粘贴 / 导入 ---------------- */

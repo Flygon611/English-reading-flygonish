@@ -423,3 +423,30 @@
   .modal__foot { flex-wrap: wrap; }
   .dict__search kbd { display: none; }
 }
+
+/* ---------------- 移动端沉浸阅读：顶部细进度条 + 顶栏自动收起 ---------------- */
+.read-progressbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 3px; z-index: 45;
+  display: none; pointer-events: none;
+  background: transparent;
+}
+.read-progressbar i {
+  display: block; height: 100%; width: 0;
+  background: var(--accent);
+  transition: width .12s linear;
+}
+@media (max-width: 860px) {
+  body[data-view="read"] .read-progressbar.is-on { display: block; }
+  .topbar {
+    overflow: hidden;
+    transition: flex-basis .18s var(--ease), height .18s var(--ease),
+                opacity .16s var(--ease), border-color .18s var(--ease);
+  }
+  body.bar-collapsed .topbar {
+    flex-basis: 0; height: 0; min-height: 0;
+    opacity: 0; border-bottom-color: transparent;
+  }
+  /* 收起顶栏后正文可以借掉那 54px */
+  body.bar-collapsed .reader__head { border-top: 0; }
+}

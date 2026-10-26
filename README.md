@@ -26,6 +26,8 @@
 - 逐词可点：音标、中文释义、词级（四级 / 六级 / 专四 / 专八 / 雅思 / 托福）、例句与中译、词形变化、发音。
 - 词形还原：点 `deliberating`、`went`、`Were`、`children` 都能落到原形词条。
 - 阅读进度、字号、行高、主题（浅色 / 深色 / 跟随系统）都记在本机。
+- **手机端沉浸阅读**：向下滑动时顶栏和文章头一起收起，只在屏幕最顶上留一条细进度条；
+  向上滑或回到顶部就恢复。滚动位置和整本书进度都按 500ms 落盘，刷新后接着读，不用再点一次词才恢复灰色标记。
 - **阅读字体可换**：Newsreader（默认阅读体）/ Literata（另一种阅读体）/ JetBrains Mono（等宽连字）/
   Inter（无衬线）/ 系统衬线 / 自定义本机字体名；标题固定 Fraunces，中文译文用霞鹜文楷。
   设置里有字体与连字预览。
@@ -186,6 +188,7 @@ node tools/quiz-test.js                          # 复习题库自检（题型 /
 node tools/test-ebook.js [x.epub y.txt]          # 电子书解析（EPUB 元数据/章节、TXT 分章）
 node tools/test-import.js [x.epub]               # 真浏览器导入：选文件 → 预览 → 入库 → 分章切换
 node tools/test-backup.js [x.epub]               # 备份往返：整本书 + 进度 → 清空 → 恢复
+node tools/test-mobile-read.js                   # 手机端：顶栏收起/进度条/进度落盘/刷新恢复标注
 node tools/browser-check.js                      # Edge 实跑 + 截图 + 控制台错误
 node tools/ui-test.js                            # 真实交互冒烟（查词/生词本/复习/句析/持久化）
 node tools/test-pages.js --url https://flygon611.github.io/English-reading-flygonish/   # 线上站冒烟
