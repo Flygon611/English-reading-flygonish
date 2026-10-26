@@ -1,0 +1,233 @@
+/* 生词本页 + 复习闪卡。 */
+
+.nb { max-width: 1120px; margin: 0 auto; padding: 38px 40px 90px; }
+.nb__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 22px; }
+.nb__title { margin: 4px 0 8px; font-family: var(--font-display); font-size: 38px; line-height: 1.15; font-weight: 600; letter-spacing: -.01em; }
+.nb__sub { margin: 0; max-width: 62ch; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+.nb__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn__count {
+  font-family: var(--font-mono); font-size: 10px; line-height: 1;
+  padding: 3px 5px; border-radius: 99px;
+  background: rgba(255, 255, 255, .18);
+}
+
+.nb__stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 14px 16px;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: var(--surface);
+}
+.stat__num { font-family: var(--font-display); font-size: 27px; font-weight: 600; line-height: 1; color: var(--ink); }
+.stat__label { font-size: 11px; color: var(--ink-3); }
+.stat--due .stat__num { color: var(--danger); }
+.stat--learning .stat__num { color: var(--warn); }
+.stat--known .stat__num { color: var(--accent); }
+
+.nb__toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.search {
+  display: flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 12px; flex: 1; min-width: 210px; max-width: 360px;
+  border: 1px solid var(--line-2); border-radius: 8px;
+  background: var(--surface); color: var(--ink-3);
+}
+.search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-softer); }
+.search input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font-size: 13px; color: var(--ink); }
+.search input::placeholder { color: var(--ink-4); }
+.nb__toolbar select {
+  height: 36px; padding: 0 8px;
+  border: 1px solid var(--line-2); border-radius: 8px;
+  background: var(--surface); color: var(--ink-2); font-size: 12.5px;
+}
+
+.nb__list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.nb-item { border-bottom: 1px solid var(--line); }
+.nb-row {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; padding: 13px 10px;
+  border: 0; background: transparent; text-align: left; color: var(--ink);
+  transition: background-color .14s var(--ease);
+}
+.nb-row:hover { background: var(--surface-2); }
+.nb-item.is-open .nb-row { background: var(--surface-2); }
+.nb-row__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.nb-row__word { font-family: var(--font-read); font-size: 18.5px; font-weight: 600; letter-spacing: -.005em; }
+.nb-row__ipa { margin-left: 8px; font-family: var(--font-ipa); font-size: 10.5px; color: var(--ink-3); font-weight: 400; }
+.nb-row__gloss {
+  font-size: 12px; color: var(--ink-2);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 62ch;
+}
+.nb-row__tags { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; max-width: 180px; }
+.nb-row__meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; min-width: 104px; font-size: 10.5px; color: var(--ink-3); }
+.nb-row__count { font-family: var(--font-mono); }
+.nb-row__time { font-family: var(--font-mono); color: var(--ink-4); }
+.nb-status { padding: 1px 7px; border-radius: 99px; border: 1px solid var(--line-2); font-size: 10px; white-space: nowrap; }
+.nb-status--due { color: var(--danger); border-color: var(--danger-soft); background: var(--danger-soft); }
+.nb-status--new { color: var(--accent); border-color: var(--accent-soft); background: var(--accent-softer); }
+.nb-status--learning { color: var(--warn); border-color: var(--line-2); background: var(--surface-2); }
+.nb-status--known { color: var(--ink-3); }
+.nb-row__chev { color: var(--ink-4); transition: transform .18s var(--ease); flex: 0 0 auto; }
+.nb-item.is-open .nb-row__chev { transform: rotate(180deg); }
+
+.nb-detail { padding: 6px 14px 20px 42px; border-top: 1px dashed var(--line); background: var(--surface); }
+.nb-detail__head { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start; margin: 12px 0; }
+.nb-detail__def { flex: 1; min-width: 0; }
+.nb-detail__lemma { margin: 0 0 4px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+.nb-detail__zh { margin: 0; font-family: var(--font-zh); font-size: 13px; line-height: 1.65; }
+.nb-detail__acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.nb-detail__forms { margin: 0 0 10px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+.nb-contexts { margin-top: 10px; }
+.nb-context { padding: 9px 0; border-top: 1px dashed var(--line); }
+.nb-context__text { margin: 0; font-family: var(--font-read); font-size: 12.5px; line-height: 1.65; color: var(--ink-2); }
+.nb-context__meta { display: flex; align-items: center; gap: 10px; margin: 5px 0 0; font-size: 10.5px; color: var(--ink-4); }
+.nb__empty { padding: 46px 12px; text-align: center; }
+.nb__empty-title { margin: 0 0 8px; font-family: var(--font-read); font-size: 22px; font-weight: 600; }
+.nb__empty p { margin: 0 0 16px; }
+.nb__more { padding: 16px; text-align: center; font-size: 11.5px; color: var(--ink-3); }
+
+/* ---------------- 复习 ---------------- */
+#review-body { padding-top: 16px; }
+.review__bar { display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); margin-bottom: 7px; }
+.review__progress { height: 3px; border-radius: 2px; overflow: hidden; background: var(--surface-3); margin-bottom: 18px; }
+.review__progress i { display: block; height: 100%; background: var(--accent); transition: width .25s var(--ease); }
+.review__card { text-align: center; padding: 4px 2px; }
+.review__card .eyebrow { margin-bottom: 2px; }
+.review__word { margin: 6px 0 4px; font-family: var(--font-display); font-size: 40px; line-height: 1.1; font-weight: 600; letter-spacing: -.015em; overflow-wrap: anywhere; }
+.review__card .tags { justify-content: center; margin: 10px 0 0; }
+.review__ctx {
+  max-width: 52ch; margin: 16px auto 18px;
+  padding: 10px 14px; text-align: left;
+  border-left: 2px solid var(--line-2); border-radius: 0 8px 8px 0;
+  background: var(--surface-2);
+  font-family: var(--font-read); font-size: 13.5px; line-height: 1.7; color: var(--ink-2);
+}
+.review__card #review-reveal { width: 100%; margin-top: 2px; }
+.review__answer { margin: 18px 0 0; padding-top: 14px; border-top: 1px dashed var(--line); text-align: left; }
+.review__answer .defs p { font-size: 14px; }
+.review__rates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 18px; }
+.rate { height: 46px; flex-direction: column; gap: 1px; font-size: 11.5px; }
+.rate b { font-family: var(--font-mono); font-size: 9.5px; font-weight: 500; color: var(--ink-3); }
+.rate--again { border-color: var(--danger-soft); color: var(--danger); }
+.rate--again:hover { background: var(--danger-soft); border-color: var(--danger); }
+.rate--hard { border-color: var(--line-2); color: var(--warn); }
+.rate--hard:hover { background: var(--surface-2); border-color: var(--line-3); }
+.rate--good { border-color: var(--accent-soft); color: var(--accent); background: var(--accent-softer); }
+.rate--good:hover { border-color: var(--accent); background: var(--accent-soft); }
+.review__hint { margin: 12px 0 0; font-size: 10.5px; color: var(--ink-4); text-align: center; }
+
+.review__done { text-align: center; padding: 14px 0 6px; }
+.review__done-title { margin: 4px 0 4px; font-family: var(--font-display); font-size: 28px; font-weight: 600; }
+.review__summary { display: flex; justify-content: center; gap: 34px; margin: 22px 0; }
+.rs { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.rs b { font-family: var(--font-display); font-size: 30px; font-weight: 600; line-height: 1; }
+.rs span { font-size: 11px; color: var(--ink-3); }
+.rs--good b { color: var(--accent); }
+.rs--hard b { color: var(--warn); }
+.rs--again b { color: var(--danger); }
+.review__done-note { margin: 10px 0 22px; font-size: 12px; color: var(--ink-3); }
+.review__done-actions { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+
+@media (max-width: 860px) {
+  .nb { padding: 26px 20px 80px; }
+  .nb__title { font-size: 30px; }
+  .nb__stats { grid-template-columns: repeat(2, 1fr); }
+  .nb-row { flex-wrap: wrap; gap: 8px 12px; }
+  .nb-row__main { flex: 1 1 100%; }
+  .nb-row__tags { justify-content: flex-start; max-width: none; flex: 1; }
+  .nb-row__meta { flex-direction: row; align-items: center; min-width: 0; flex-wrap: wrap; }
+  .nb-detail { padding-left: 14px; }
+}
+@media (max-width: 520px) {
+  .nb__stats { gap: 8px; }
+  .stat { padding: 11px 13px; }
+  .stat__num { font-size: 22px; }
+  .nb__toolbar select { flex: 1 1 45%; }
+  .search { max-width: none; }
+  .review__word { font-size: 32px; }
+  .review__summary { gap: 22px; }
+}
+
+/* ---------- 复习：题型选择与选择题/拼写 ---------- */
+.nb__mode { display: inline-flex; align-items: center; gap: 6px; }
+.nb__mode-label { font-size: 11px; color: var(--ink-3); }
+.nb__mode select {
+  height: 34px; padding: 0 8px;
+  border: 1px solid var(--line-2); border-radius: 8px;
+  background: var(--surface); color: var(--ink-2); font-size: 12.5px;
+}
+.review__card--quiz { text-align: left; }
+.review__card--quiz > .ipa { display: block; text-align: center; margin: 4px 0 10px; }
+.review__word { text-align: center; }
+.review__prompt-zh {
+  margin: 12px 0 8px;
+  padding: 12px 14px;
+  border-left: 2px solid var(--accent-soft);
+  background: var(--surface-2);
+  border-radius: 0 8px 8px 0;
+  font-family: var(--font-zh);
+  font-size: 17px; line-height: 1.7; color: var(--ink);
+}
+.review__sentence {
+  margin: 12px 0 8px;
+  font-family: var(--font-read);
+  font-size: 17px; line-height: 1.8; color: var(--ink);
+  padding: 12px 14px;
+  border-left: 2px solid var(--line-2);
+  background: var(--surface-2);
+  border-radius: 0 8px 8px 0;
+}
+.review__play { margin: 12px auto 0; display: flex; }
+.review__opts {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin-top: 14px;
+}
+.review__opt {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 10px 12px; text-align: left;
+  border: 1px solid var(--line-2); border-radius: 10px;
+  background: var(--surface); color: var(--ink);
+  font-size: 12.5px; line-height: 1.55;
+  transition: border-color .14s var(--ease), background-color .14s var(--ease);
+}
+.review__opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-softer); }
+.review__opt:disabled { cursor: default; opacity: .92; }
+.review__opt-key {
+  flex: 0 0 auto; display: inline-grid; place-items: center;
+  width: 18px; height: 18px; margin-top: 1px;
+  border-radius: 5px; background: var(--surface-2);
+  font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-3);
+}
+.review__opt.is-correct { border-color: var(--accent); background: var(--accent-softer); }
+.review__opt.is-correct .review__opt-key { background: var(--accent); color: var(--on-accent); }
+.review__opt.is-wrong { border-color: var(--danger); background: var(--danger-soft); }
+.review__opt.is-wrong .review__opt-key { background: var(--danger); color: #fff; }
+.review__feedback {
+  margin-top: 14px; padding: 12px 14px;
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface-2);
+  font-size: 12.5px; line-height: 1.65;
+}
+.review__feedback.is-correct { border-color: var(--accent-soft); }
+.review__feedback.is-wrong { border-color: var(--danger-soft); }
+.review__fb-title { margin: 0 0 6px; font-weight: 650; color: var(--ink); }
+.review__feedback.is-correct .review__fb-title { color: var(--accent); }
+.review__feedback.is-wrong .review__fb-title { color: var(--danger); }
+.review__fb-line { margin: 0 0 6px; color: var(--ink-2); }
+.review__fb-line b, .review__fb-answer { color: var(--ink); }
+.review__fb-word { margin: 8px 0 4px; font-family: var(--font-read); font-size: 16px; font-weight: 600; color: var(--ink); }
+.review__fb-ctx { margin: 8px 0 0; color: var(--ink-2); font-size: 12px; }
+.review__fb-note { margin: 8px 0 0; color: var(--warn); font-size: 11px; }
+.review__spell { display: flex; gap: 8px; margin-top: 14px; }
+.review__spell input {
+  flex: 1; min-width: 0; height: 42px; padding: 0 12px;
+  border: 1px solid var(--line-2); border-radius: 9px;
+  background: var(--surface); color: var(--ink); font-size: 16px;
+  font-family: var(--font-mono);
+}
+.review__spell input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-softer); }
+#review-next { width: 100%; margin-top: 14px; }
+#review-quiz-hint { margin-top: 10px; }
+@media (max-width: 520px) {
+  .review__opts { grid-template-columns: 1fr; }
+  .nb__mode-label { display: none; }
+}

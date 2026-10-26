@@ -1,0 +1,158 @@
+/* 设计令牌：颜色 / 字体 / 间距 / 圆角 / 阴影。唯一来源，组件只引用变量。 */
+
+:root {
+  /* 字体：自托管 OFL 字体见 css/fonts.css；中文用 WenKai 兜底 */
+  --font-display: "Fraunces", "WenKaiCN", "Inter", Georgia, serif;
+  --font-read-newsreader: "Newsreader", "WenKaiCN", "Inter", Georgia, serif;
+  --font-read-literata: "Literata", "WenKaiCN", "Inter", Georgia, serif;
+  --font-read-mono: "JetBrains Mono", "WenKaiCN", "Newsreader", Consolas, monospace;
+  --font-read-sans: "Inter", "WenKaiCN", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-serif-stack: "Charter", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "PingFang SC", "Microsoft YaHei", serif;
+  --font-read-system: "Charter", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "PingFang SC", "Microsoft YaHei", serif;
+  --font-read: var(--font-read-newsreader);
+  --font-ui: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenKaiCN", system-ui, -apple-system, sans-serif;
+  --font-zh: "WenKaiCN", "PingFang SC", "Microsoft YaHei", "Inter", serif;
+  --font-ipa: "Inter", "Segoe UI", "WenKaiCN", sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", "Cascadia Mono", "SF Mono", Consolas, ui-monospace, monospace;
+
+  --font-scale: 1;
+  --read-leading: 1.9;
+  --topbar-h: 60px;
+  --lib-w: 256px;
+  --insp-w: 336px;
+
+  --radius-xs: 4px;
+  --radius-s: 7px;
+  --radius: 11px;
+  --radius-l: 16px;
+
+  --ease: cubic-bezier(.22, .61, .36, 1);
+  --dur: .18s;
+
+  /* 浅色：海雾纸面 */
+  --bg: #F2F4F1;
+  --bg-deep: #E9EDE8;
+  --surface: #FCFDFB;
+  --surface-2: #EDF0EC;
+  --surface-3: #E3E8E2;
+  --paper: #FBFCF9;
+  --paper-2: #F5F7F3;
+  --ink: #182428;
+  --ink-2: #44545A;
+  --ink-3: #6E7F84;
+  --ink-4: #9CAAAE;
+  --line: #DCE1DB;
+  --line-2: #C8D0C9;
+  --line-3: #B1BCB4;
+  --accent: #2F6F6A;
+  --accent-hover: #275E59;
+  --accent-soft: #DDEBE7;
+  --accent-softer: #ECF3F1;
+  --on-accent: #F7FCFB;
+  --danger: #A3493D;
+  --danger-soft: #F3E4E0;
+  --warn: #8F6A2B;
+  --gold: #A9752C;
+  --sel: rgba(47, 111, 106, .14);
+  --note-bg: rgba(47, 111, 106, .13);
+  --shadow-1: 0 1px 2px rgba(18, 40, 40, .05), 0 12px 30px rgba(18, 40, 40, .055);
+  --shadow-2: 0 30px 80px rgba(10, 28, 30, .24);
+
+  /* 词级下划线：四种颜色要能一眼分开（2px） */
+  --lvl-cet4-line: rgba(20, 124, 112, .82);
+  --lvl-cet6-line: rgba(38, 92, 176, .82);
+  --lvl-tem4-line: rgba(160, 96, 8, .88);
+  --lvl-tem8-line: rgba(116, 62, 176, .82);
+  --lvl-out-line: rgba(96, 112, 124, .7);
+
+  /* 句子成分角色色 */
+  --role-subj: #2A7F76;
+  --role-pred: #B4552D;
+  --role-obj: #A9752C;
+  --role-comp: #7B57A6;
+  --role-adv: #3B6FB0;
+  --role-attr: #5C8A3F;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0C1416;
+  --bg-deep: #0A1113;
+  --surface: #121D20;
+  --surface-2: #162326;
+  --surface-3: #1B2B2F;
+  --paper: #101B1E;
+  --paper-2: #0E181B;
+  --ink: #E4EBE6;
+  --ink-2: #B0C0BB;
+  --ink-3: #859894;
+  --ink-4: #5E736F;
+  --line: #233438;
+  --line-2: #2E4549;
+  --line-3: #3A5459;
+  --accent: #6CC3B4;
+  --accent-hover: #8AD7C8;
+  --accent-soft: #15322E;
+  --accent-softer: #112825;
+  --on-accent: #08201D;
+  --danger: #D68A7C;
+  --danger-soft: #3A2120;
+  --warn: #D2A45E;
+  --gold: #D2A45E;
+  --sel: rgba(108, 195, 180, .2);
+  --note-bg: rgba(108, 195, 180, .16);
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, .03), 0 18px 40px rgba(0, 0, 0, .35);
+  --shadow-2: 0 30px 80px rgba(0, 0, 0, .58);
+
+  --lvl-cet4-line: rgba(108, 214, 200, .9);
+  --lvl-cet6-line: rgba(132, 173, 240, .9);
+  --lvl-tem4-line: rgba(230, 183, 92, .92);
+  --lvl-tem8-line: rgba(196, 154, 236, .9);
+  --lvl-out-line: rgba(160, 180, 182, .7);
+
+  --role-subj: #6CC3B4;
+  --role-pred: #E18A63;
+  --role-obj: #D5A55C;
+  --role-comp: #B28DD6;
+  --role-adv: #7CA5E0;
+  --role-attr: #9CC46F;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+html[data-read-font="literata"] { --font-read: var(--font-read-literata); }
+html[data-read-font="mono"] { --font-read: var(--font-read-mono); }
+html[data-read-font="sans"] { --font-read: var(--font-read-sans); }
+html[data-read-font="system"] { --font-read: var(--font-read-system); }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+img, svg { display: block; }
+::selection { background: var(--sel); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+[hidden] { display: none !important; }
+
+.skip-link {
+  position: absolute; left: 12px; top: -60px; z-index: 999;
+  background: var(--surface); border: 1px solid var(--line-2); border-radius: 8px;
+  padding: 8px 14px; font-size: 13px; box-shadow: var(--shadow-1);
+}
+.skip-link:focus { top: 12px; }
+
+/* 细滚动条 */
+* { scrollbar-width: thin; scrollbar-color: var(--line-3) transparent; }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 99px; border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--line-3); background-clip: content-box; }
+::-webkit-scrollbar-track { background: transparent; }

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>深读 DeepRead · 英语精读</title>
+<meta name="description" content="把英文文章放进来，点词查本地四六级、专四专八词库；查过的词自动进生词本，可复习；附句子成分分析。零联网、纯本地。">
+<meta name="theme-color" content="#F2F4F1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232F6F6A'/%3E%3Cg fill='none' stroke='%23F4FBFA' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 12c3-2.6 6.5-2.6 9.5 0s6.5 2.6 9.5 0'/%3E%3Cpath d='M6 19c3-2.6 6.5-2.6 9.5 0s6.5 2.6 9.5 0'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/reader.css">
+<link rel="stylesheet" href="css/notebook.css">
+<script>
+window.__drErrors = [];
+window.addEventListener('error', function (e) { window.__drErrors.push(String(e.message)); });
+window.addEventListener('unhandledrejection', function (e) { window.__drErrors.push('promise: ' + String(e.reason)); });
+</script>
+</head>
+<body>
+<a class="skip-link" href="#article-body">跳到正文</a>
+
+<div class="app" id="app">
+  <header class="topbar" id="topbar">
+    <a class="brand" href="#/read" aria-label="深读 DeepRead 首页">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M5 10.5c3.4-2.9 7.3-2.9 10.7 0s7.3 2.9 10.7 0"/>
+          <path d="M5 17c3.4-2.9 7.3-2.9 10.7 0s7.3 2.9 10.7 0"/>
+          <path d="M5 23.5c3.4-2.9 7.3-2.9 10.7 0s7.3 2.9 10.7 0"/>
+        </svg>
+      </span>
+      <span class="brand__text">
+        <strong>深读</strong>
+        <small>DEEPREAD</small>
+      </span>
+    </a>
+
+    <nav class="tabs" id="tabs" aria-label="主导航">
+      <a class="tab" id="tab-reader" href="#/read" data-tab="read"><span class="tab__idx">01</span>阅读</a>
+      <a class="tab" id="tab-notebook" href="#/notebook" data-tab="notebook"><span class="tab__idx">02</span>生词本<span class="tab__count" id="nb-count" hidden>0</span></a>
+      <a class="tab" id="tab-dict" href="#/dict" data-tab="dict"><span class="tab__idx">03</span>词库</a>
+    </nav>
+
+    <div class="topbar__right">
+      <button class="icon-btn topbar__only-narrow" id="library-toggle" type="button" aria-label="打开文章库" title="文章库"></button>
+      <span class="vrule topbar__only-narrow" aria-hidden="true"></span>
+      <button class="icon-btn topbar__wide-only" id="font-dec" type="button" aria-label="缩小字号" title="缩小字号">A−</button>
+      <button class="icon-btn topbar__wide-only" id="font-inc" type="button" aria-label="放大字号" title="放大字号">A+</button>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切换深浅色" title="切换深浅色"></button>
+      <button class="icon-btn" id="settings-open" type="button" aria-label="设置" title="设置"></button>
+    </div>
+  </header>
+
+  <main class="main" id="main">
+    <!-- 阅读 -->
+    <section class="view view--read" id="view-read" data-view="read">
+      <aside class="library" id="library" aria-label="文章库">
+        <div class="library__head">
+          <div>
+            <p class="eyebrow">LIBRARY</p>
+            <h2 class="library__title">文章</h2>
+          </div>
+          <div class="library__actions">
+            <button class="icon-btn" id="btn-new-article" type="button" aria-label="粘贴新文章" title="粘贴新文章"></button>
+            <button class="icon-btn library__close" id="library-close" type="button" aria-label="收起文章库">×</button>
+          </div>
+        </div>
+        <div class="library__search">
+          <input id="library-search" type="search" placeholder="搜索文章…" autocomplete="off" aria-label="搜索文章">
+        </div>
+        <ul class="library__list" id="library-list"></ul>
+        <div class="library__foot" id="library-foot"></div>
+      </aside>
+
+      <section class="reader" id="reader">
+        <div class="reader__head" id="article-head"></div>
+        <div class="reader__scroll" id="article-scroll" tabindex="0">
+          <article class="prose" id="article-body" lang="en"></article>
+          <div class="reader__end" id="article-end"></div>
+        </div>
+      </section>
+
+      <aside class="inspector" id="inspector" aria-label="单词与句子检查器"></aside>
+    </section>
+
+    <!-- 生词本 -->
+    <section class="view view--notebook" id="view-notebook" data-view="notebook" hidden></section>
+
+    <!-- 词库 -->
+    <section class="view view--dict" id="view-dict" data-view="dict" hidden></section>
+  </main>
+</div>
+
+<div class="toast-layer" id="toast-layer" aria-live="polite"></div>
+
+<div class="modal-layer" id="modal-layer" hidden>
+  <!-- 粘贴文章 -->
+  <div class="modal" id="paste-modal" data-modal="paste" role="dialog" aria-modal="true" aria-labelledby="paste-heading" hidden>
+    <div class="modal__panel">
+      <header class="modal__head">
+        <div>
+          <p class="eyebrow" id="paste-eyebrow">NEW ARTICLE</p>
+          <h2 id="paste-heading">粘贴一篇英文文章</h2>
+        </div>
+        <button class="icon-btn modal__close" type="button" data-close aria-label="关闭"></button>
+      </header>
+      <div class="modal__body">
+        <label class="field">
+          <span class="field__label">标题</span>
+          <input id="paste-title" type="text" placeholder="可选，默认取正文第一行" autocomplete="off">
+        </label>
+        <label class="field" id="paste-author-field" hidden>
+          <span class="field__label">作者</span>
+          <input id="paste-author" type="text" placeholder="从电子书元数据里读到的作者" autocomplete="off">
+        </label>
+        <div class="book-preview" id="book-preview" hidden>
+          <p class="book-preview__meta" id="book-preview-meta"></p>
+          <ol class="book-preview__list" id="book-chapters"></ol>
+        </div>
+        <label class="field" id="paste-text-field">
+          <span class="field__label">正文</span>
+          <textarea id="paste-text" rows="13" spellcheck="false" placeholder="Paste the article here.&#10;&#10;段落之间空一行；也可以直接把 .txt / .md / .epub 文件拖进来。"></textarea>
+        </label>
+        <p class="hint" id="paste-hint">离线可用，内容只保存在本机浏览器里。</p>
+      </div>
+      <footer class="modal__foot">
+        <button class="btn btn--ghost" id="paste-file-btn" type="button">导入文件</button>
+        <input type="file" id="paste-file" accept=".txt,.md,.markdown,.epub,text/plain,application/epub+zip" hidden>
+        <span class="spacer"></span>
+        <button class="btn" type="button" data-close>取消</button>
+        <button class="btn btn--primary" id="btn-paste-start" type="button">开始阅读</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 设置 -->
+  <div class="modal" id="settings-modal" data-modal="settings" role="dialog" aria-modal="true" aria-labelledby="settings-heading" hidden>
+    <div class="modal__panel">
+      <header class="modal__head">
+        <div>
+          <p class="eyebrow">SETTINGS</p>
+          <h2 id="settings-heading">设置</h2>
+        </div>
+        <button class="icon-btn modal__close" type="button" data-close aria-label="关闭"></button>
+      </header>
+      <div class="modal__body" id="settings-body"></div>
+      <footer class="modal__foot">
+        <span class="spacer"></span>
+        <button class="btn btn--primary" type="button" data-close>完成</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 复习 -->
+  <div class="modal" id="review-modal" data-modal="review" role="dialog" aria-modal="true" aria-labelledby="review-heading" hidden>
+    <div class="modal__panel modal__panel--review">
+      <header class="modal__head">
+        <div>
+          <p class="eyebrow">REVIEW</p>
+          <h2 id="review-heading">复习</h2>
+        </div>
+        <button class="icon-btn modal__close" type="button" data-close aria-label="关闭"></button>
+      </header>
+      <div class="modal__body" id="review-body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 数据与引擎（顺序有意义：数据 → 引擎 → 核心 → 页面） -->
+<script src="js/data/exam.js"></script>
+<script src="js/data/affixes.js"></script>
+<script src="js/engine/text.js"></script>
+<script src="js/engine/pos.js"></script>
+<script src="js/engine/analyze.js"></script>
+<script src="js/core/dom.js"></script>
+<script src="js/core/store.js"></script>
+<script src="js/core/ebook.js"></script>
+<script src="js/core/books.js"></script>
+<script src="js/core/backup.js"></script>
+<script src="js/core/tts.js"></script>
+<script src="js/core/dict.js"></script>
+<script src="js/core/quiz.js"></script>
+<script src="js/core/ui.js"></script>
+<script src="js/core/router.js"></script>
+<script src="js/views/card.js"></script>
+<script src="js/views/reader.js"></script>
+<script src="js/views/notebook.js"></script>
+<script src="js/views/dictionary.js"></script>
+<script src="js/views/settings.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+# 构建产物（GitHub Pages 由 Actions 现构建，不提交）
+dist/
+
+# 验收截图：里面可能含受版权保护的正文（例如用户导入的电子书、演讲稿），不进公开仓库
+preview/
+
+# 本地/系统垃圾
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+*.tmp

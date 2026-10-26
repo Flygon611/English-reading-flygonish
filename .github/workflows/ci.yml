@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 电子书 / 文本解析自检（不需要浏览器）
+        run: node tools/test-ebook.js
+
+      - name: 静态站打包自检（GitHub Pages 发布用的就是这份）
+        run: node tools/build-site.js
