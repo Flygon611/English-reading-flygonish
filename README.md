@@ -188,7 +188,7 @@ node tools/quiz-test.js                          # 复习题库自检（题型 /
 node tools/test-ebook.js [x.epub y.txt]          # 电子书解析（EPUB 元数据/章节、TXT 分章）
 node tools/test-import.js [x.epub]               # 真浏览器导入：选文件 → 预览 → 入库 → 分章切换
 node tools/test-backup.js [x.epub]               # 备份往返：整本书 + 进度 → 清空 → 恢复
-node tools/test-mobile-read.js                   # 手机端：顶栏收起/进度条/进度落盘/刷新恢复标注
+node tools/test-mobile-read.js [--url 线上地址]     # 手机端：顶栏收起/进度条/进度落盘/刷新恢复标注
 node tools/browser-check.js                      # Edge 实跑 + 截图 + 控制台错误
 node tools/ui-test.js                            # 真实交互冒烟（查词/生词本/复习/句析/持久化）
 node tools/test-pages.js --url https://flygon611.github.io/English-reading-flygonish/   # 线上站冒烟
