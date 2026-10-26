@@ -6,13 +6,11 @@
 一个给自己用的英语精读工具。不是课程，不是题库，也不讲故事——就是一张安静的阅读台：
 **文章 → 点词 → 查义 → 留痕 → 复习**，另附一个「仅供参考」的句子成分分析。
 
-![阅读](preview/ui-05-sentence.png)
+线上地址：<https://flygon611.github.io/English-reading-flygonish/>
 
-![点词](preview/ui-02-wordcard.png)
+![阅读](screenshots/live-desktop.png)
 
-![生词本](preview/ui-03-notebook.png)
-
-![手机](preview/ui-07-420-read.png)
+![手机](screenshots/live-mobile.png)
 
 ---
 
@@ -144,9 +142,10 @@ DeepReadEnglish/
 │  ├─ views/                 card(词卡/句卡) · reader · notebook · dictionary · settings
 │  ├─ data/                  exam(考试词库) · dict(兜底) · pos-lex(词性表) · affixes(词缀)
 │  └─ app.js                 引导、主题、快捷键、调试接口
-├─ tools/                    serve · build-dict · report-dict · build-pos · test-analyze · browser-check · ui-test
+├─ tools/                    serve · build-dict · build-site · test-*(解析/导入/备份/Pages) · browser-check · ui-test
 ├─ docs/                     DICT.md · ANALYSIS.md · QA.md · CREDITS.md
-└─ preview/                  Edge 实机截图（browser-check 生成）
+├─ screenshots/              线上站截图（只含原创示例文章）
+└─ preview/                  本地验收截图（.gitignore，不进公开仓库）
 ```
 
 零构建、零依赖：所有脚本按顺序用 `<script>` 加载，数据是 `window.*` 全局变量，
@@ -189,6 +188,8 @@ node tools/test-import.js [x.epub]               # 真浏览器导入：选文�
 node tools/test-backup.js [x.epub]               # 备份往返：整本书 + 进度 → 清空 → 恢复
 node tools/browser-check.js                      # Edge 实跑 + 截图 + 控制台错误
 node tools/ui-test.js                            # 真实交互冒烟（查词/生词本/复习/句析/持久化）
+node tools/test-pages.js --url https://flygon611.github.io/English-reading-flygonish/   # 线上站冒烟
+node tools/test-import.js --url <线上地址> x.epub                                     # 线上站导入验收
 ```
 
 测试与截图用 Edge 远程调试端口驱动（Node 内置 WebSocket，不依赖 puppeteer）。

@@ -16,7 +16,8 @@ const EDGE = process.env.EDGE_PATH || 'C:/Program Files (x86)/Microsoft/Edge/App
 const DIST = path.join(ROOT, 'dist');
 const PORT = 8801;
 const PREFIX = '/deepread/';           // 模拟仓库名
-const URL_BASE = 'http://127.0.0.1:' + PORT + PREFIX;
+const LIVE = (() => { const i = process.argv.indexOf('--url'); return i >= 0 ? String(process.argv[i + 1] || '') : ''; })();
+const URL_BASE = LIVE ? (LIVE.replace(/\/+$/, '') + '/') : ('http://127.0.0.1:' + PORT + PREFIX);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const results = [];
@@ -70,15 +71,15 @@ async function fetchJSON(url, init) {
 }
 
 (async () => {
-  if (!fs.existsSync(path.join(DIST, 'index.html'))) {
+  if (!LIVE && !fs.existsSync(path.join(DIST, 'index.html'))) {
     console.error('没有 dist/：先跑 node tools/build-site.js');
     process.exit(2);
   }
   if (!fs.existsSync(EDGE)) { console.error('找不到 Edge'); process.exit(2); }
 
   /* 1. 起一个带 /deepread/ 前缀的静态服务器，模拟 Pages 子路径 */
-  const server = spawn(process.execPath, [path.join(ROOT, 'tools', 'serve.js'), String(PORT), '--root', DIST, '--prefix', PREFIX], { stdio: 'ignore' });
-  await sleep(600);
+  const server = LIVE ? null : spawn(process.execPath, [path.join(ROOT, 'tools', 'serve.js'), String(PORT), '--root', DIST, '--prefix', PREFIX], { stdio: 'ignore' });
+  if (!LIVE) await sleep(600);
 
   const userDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dr-pages-'));
   let cdpPort = 9391;
@@ -130,7 +131,8 @@ async function fetchJSON(url, init) {
     const bad = responses.filter((r) => r.status >= 400).map((r) => r.status + ' ' + r.url);
     check('没有 404 / 失败请求', bad.length === 0, bad.slice(0, 3).join(' | '));
 
-    const jsOk = responses.some((r) => /\/deepread\/js\/data\/exam\.js$/.test(r.url) && r.status === 200);
+    const examRe = new RegExp(URL_BASE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + 'js/data/exam\\.js$');
+    const jsOk = responses.some((r) => examRe.test(r.url) && r.status === 200);
     check('词库脚本走子路径加载成功', jsOk, responses.filter((r) => /exam\.js/.test(r.url)).map((r) => r.status).join(','));
 
     /* 字体：浏览器里确实用上了自托管字体 */
@@ -160,7 +162,7 @@ async function fetchJSON(url, init) {
     check('无未捕获脚本错误', consoleErrors.length === 0, consoleErrors.length + ' 个');
   } finally {
     try { edge.kill(); } catch (e) {}
-    try { server.kill(); } catch (e) {}
+    try { if (server) server.kill(); } catch (e) {}
   }
 
   const failed = results.filter((r) => !r.ok);

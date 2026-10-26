@@ -14,7 +14,13 @@ const os = require('os');
 
 const ROOT = path.resolve(__dirname, '..');
 const EDGE = process.env.EDGE_PATH || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
-const FILE_BASE = 'file:///' + ROOT.replace(/\\/g, '/') + '/index.html#/read';
+const LIVE_ARG = (() => {
+  const i = process.argv.indexOf('--url');
+  return i >= 0 ? String(process.argv[i + 1] || '') : '';
+})();
+const FILE_BASE = LIVE_ARG
+  ? (LIVE_ARG.replace(/[/]+$/, '') + '/#/read')
+  : ('file:///' + ROOT.replace(/\\/g, '/') + '/index.html#/read');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 class CDP {
