@@ -5,6 +5,7 @@
   --font-display: "Fraunces", "WenKaiCN", "Inter", Georgia, serif;
   --font-read-newsreader: "Newsreader", "WenKaiCN", "Inter", Georgia, serif;
   --font-read-literata: "Literata", "WenKaiCN", "Inter", Georgia, serif;
+  --font-read-garamond: "EB Garamond", "WenKaiCN", "Inter", Georgia, serif;
   --font-read-mono: "JetBrains Mono", "WenKaiCN", "Newsreader", Consolas, monospace;
   --font-read-sans: "Inter", "WenKaiCN", "PingFang SC", "Microsoft YaHei", sans-serif;
   --font-serif-stack: "Charter", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "PingFang SC", "Microsoft YaHei", serif;
@@ -121,6 +122,7 @@
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 html[data-read-font="literata"] { --font-read: var(--font-read-literata); }
+html[data-read-font="garamond"] { --font-read: var(--font-read-garamond); }
 html[data-read-font="mono"] { --font-read: var(--font-read-mono); }
 html[data-read-font="sans"] { --font-read: var(--font-read-sans); }
 html[data-read-font="system"] { --font-read: var(--font-read-system); }

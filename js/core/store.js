@@ -34,7 +34,7 @@
   function settings() {
     var s = read(KEYS.settings, null);
     var out = Object.assign({}, DEFAULT_SETTINGS, s || {});
-    if (!/^(newsreader|literata|mono|sans|system|custom)$/.test(String(out.readFont))) out.readFont = 'newsreader';
+    if (!/^(newsreader|literata|garamond|mono|sans|system|custom)$/.test(String(out.readFont))) out.readFont = 'newsreader';
     return out;
   }
   function saveSettings(s) { write(KEYS.settings, Object.assign({}, DEFAULT_SETTINGS, s)); }

@@ -63,6 +63,12 @@
   font-variant-ligatures: common-ligatures contextual;
   font-feature-settings: "liga" 1, "clig" 1;
 }
+/* EB Garamond 自带 dlig（ct / st / Th 之类的任意连字），但字号默认是关的：选中它时打开 */
+html[data-read-font="garamond"] .prose,
+html[data-read-font="garamond"] .font-sample p {
+  font-variant-ligatures: common-ligatures contextual discretionary-ligatures;
+  font-feature-settings: "liga" 1, "clig" 1, "dlig" 1;
+}
 .para { margin: 0 0 1.05em; }
 .para:last-child { margin-bottom: 0; }
 .reader__end { height: 1px; }

@@ -1448,29 +1448,33 @@ async function main() {
         const selInfo = await ev('(function(){var s=__qa.q("#set-readfont"); if(!s) return {exists:false}; return {exists:true, kind:s.tagName, value:s.value, options:[].slice.call(s.options).map(function(o){return o.value;})};})()');
         rec.readFontSelect = selInfo;
         REQUIRED(rec, selInfo && selInfo.exists, '#set-readfont 阅读字体选择器存在', JSON.stringify(selInfo));
-        const expected = { literata: 'Literata', mono: 'JetBrains Mono', system: null, sans: 'Inter', newsreader: 'Newsreader' };
+        const expected = { literata: 'Literata', garamond: 'EB Garamond', mono: 'JetBrains Mono', system: null, sans: 'Inter', newsreader: 'Newsreader' };
         rec.fontSwitches = [];
-        for (const key of ['literata', 'mono', 'system', 'sans', 'newsreader']) {
+        for (const key of ['literata', 'garamond', 'mono', 'system', 'sans', 'newsreader']) {
           const applied = await ev('(function(){var s=__qa.q("#set-readfont"); if(!s) return false; var d=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,"value"); if(d&&d.set) d.set.call(s,"' + key + '"); else s.value="' + key + '"; s.dispatchEvent(new Event("input",{bubbles:true})); s.dispatchEvent(new Event("change",{bubbles:true})); return true;})()');
           await sleep(700);
-          const st = await ev('(function(){var a=__qa.q("#article-body"); var cs=a?getComputedStyle(a):null; var s=__qa.ls("dr.settings.v1"); return {attr:document.documentElement.getAttribute("data-read-font")||"", fontFamily:cs?cs.fontFamily:"", settings:(s&&s.readFont)||null, px:cs?parseFloat(cs.fontSize):0};})()');
+          const st = await ev('(function(){var a=__qa.q("#article-body"); var cs=a?getComputedStyle(a):null; var s=__qa.ls("dr.settings.v1"); return {attr:document.documentElement.getAttribute("data-read-font")||"", fontFamily:cs?cs.fontFamily:"", settings:(s&&s.readFont)||null, px:cs?parseFloat(cs.fontSize):0, ffs:cs?cs.fontFeatureSettings:"", fvl:cs?cs.fontVariantLigatures:""};})()');
           rec.fontSwitches.push({ key: key, applied: applied, state: st });
           REQUIRED(rec, applied === true, '切换阅读字体到 ' + key + '（#set-readfont change）', JSON.stringify(st));
           REQUIRED(rec, st.attr === key, 'data-read-font 变为 ' + key, JSON.stringify(st));
+          if (key === 'garamond') {
+            rec.garamondFeatures = { ffs: st.ffs, fvl: st.fvl, fontFamily: st.fontFamily };
+            REQUIRED(rec, /dlig/i.test(st.ffs || '') && /discretionary-ligatures/i.test(st.fvl || ''), 'EB Garamond 下 dlig（任意连字）已打开', JSON.stringify(rec.garamondFeatures));
+          }
           if (expected[key]) {
             REQUIRED(rec, new RegExp(expected[key].replace(/\s+/g, '\\s+'), 'i').test(st.fontFamily || ''), '正文实际字体栈含 ' + expected[key], st.fontFamily);
           } else {
-            REQUIRED(rec, !/Newsreader|Literata|JetBrains Mono/i.test(st.fontFamily || ''), 'system 档不指向自托管阅读字体（用系统衬线栈）', st.fontFamily);
+            REQUIRED(rec, !/Newsreader|Literata|EB Garamond|JetBrains Mono/i.test(st.fontFamily || ''), 'system 档不指向自托管阅读字体（用系统衬线栈）', st.fontFamily);
           }
           if (key === 'literata') { rec.shotLiterata = await shot('ui-08-font-literata'); rec.shots.push(rec.shotLiterata); }
           if (key === 'mono') { rec.shotMono = await shot('ui-08-font-mono'); rec.shots.push(rec.shotMono); }
         }
         /* file:// 下 document.fonts.check 必须为 true（Lead 要求独立确认） */
-        const checkFams = ['Fraunces', 'Newsreader', 'Inter', 'WenKaiCN', 'Literata', 'JetBrains Mono'];
+        const checkFams = ['Fraunces', 'Newsreader', 'Inter', 'WenKaiCN', 'Literata', 'EB Garamond', 'JetBrains Mono'];
         const checks = await ev('(function(){var out={}; var fams=' + JSON.stringify(checkFams) + '; fams.forEach(function(f){ try{ out[f]=document.fonts.check(\'16px "\' + f + \'"\'); }catch(e){ out[f]=false; } }); return out; })()');
         rec.fontCheck = checks;
         const checkFalse = Object.keys(checks || {}).filter((k) => !checks[k]);
-        REQUIRED(rec, checkFalse.length === 0, 'document.fonts.check 六个字体均为 true（file://）', JSON.stringify(checks));
+        REQUIRED(rec, checkFalse.length === 0, 'document.fonts.check 全部自托管字体均为 true（file://）', JSON.stringify(checks));
         /* 字体请求失败（若有 @font-face 拉不到会静默降级，必须抓出来） */
         const fontFails = (cdp.failedRequests || []).filter((r) => /\.(woff2?|ttf)/i.test(r.url || ''));
         rec.fontFailedRequests = fontFails;

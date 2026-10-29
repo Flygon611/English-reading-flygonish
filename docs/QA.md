@@ -288,3 +288,23 @@ node tools/ui-test.js --selftest                 :: 验证测试助手/事件/�
 进度条宽度、进度百分比、回顶恢复、刷新后标记恢复（不点词）、刷新后滚动位置、电子书同章同位置恢复。
 另回归：`browser-check` 6 路由 0 失败 / `ui-test` 235 断言 0 失败 / `quiz-test` 167 通过。
 截图：`preview/ui-18-mobile-top.png`、`preview/ui-18-mobile-immersive.png`。
+
+## 8.10 Lead 追加：EB Garamond（2026-10-29 18:3x）
+
+用户提到 EB Garamond「可嵌入、有连字、但要打开」。核查结论与实现：
+
+- **许可**：SIL OFL 1.1，允许嵌入与自托管；许可证已放 `assets/fonts/licenses/OFL-EBGaramond.txt`。
+- **关键坑**：Google Fonts 的 woff2 子集（gstatic / Fontsource 的 `latin` 切片）会被裁到只剩 `liga` / `rlig`，
+  **没有 `dlig`**；而 google/fonts 仓库里的**完整可变 TTF** 有 32 个 OpenType 特性：
+  `dlig hlig liga rlig smcp onum swsh ss01-ss07 …`。所以本项目用的是完整 TTF（`ebgaramond.ttf` 851 KB +
+  `ebgaramond-italic.ttf` 754 KB），不是子集。
+- **打开连字**：`html[data-read-font="garamond"] .prose`（以及设置里的样例行）设置
+  `font-feature-settings: "liga" 1, "clig" 1, "dlig" 1` + `font-variant-ligatures: … discretionary-ligatures`。
+  效果：`ct / st / Th` 会连写；`fi / fl / ffi` 是字体默认 `liga`，本来就开。
+- **接线**：`css/fonts.css` 两个 @font-face（normal/italic，`font-weight: 400 800`）、`css/tokens.css`
+  `--font-read-garamond` + `html[data-read-font="garamond"]`、`js/core/store.js` 白名单、`js/views/settings.js`
+  下拉选项（「EB Garamond · 旧体衬线 + 连字」）与样例文本（含 `act stop affluent Th`）。
+- **验证**：`ui-test` 字体循环新增 garamond，断言 `data-read-font`、字体栈、`document.fonts.check`、
+  computed `font-feature-settings` 含 dlig；239 断言 0 失败。另做了 dlig 开/关对照截图，`act / stop / Th`
+  在开启后明显连写，Newsreader 对照组无变化。
+- 截图：`preview/ui-19-garamond-reader.png`、`preview/ui-19-garamond-settings.png`。

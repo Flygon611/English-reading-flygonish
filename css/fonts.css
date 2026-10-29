@@ -5,6 +5,9 @@
  *   界面 / 音标       Inter           inter.woff2        （IPA 覆盖最全）
  *   中文译文          WenKaiCN        wenkai.woff2       （LXGW WenKai 霞鹜文楷）
  *   备选阅读体        Literata        literata.ttf       （Google Fonts，OFL）
+ *   备选阅读体        EB Garamond     ebgaramond.ttf     （Google Fonts 完整可变字体，OFL）
+ *                                      + ebgaramond-italic.ttf；自带 dlig/hlig/smcp 等 32 个特性，
+ *                                        选中该字体时由 reader.css 打开 dlig（ct / st / Th 之类的任意连字）
  *   等宽 / 连字       JetBrains Mono  jetbrains-mono.ttf （Google Fonts，OFL）
  *
  * 字体栈规则见 css/tokens.css：
@@ -46,6 +49,20 @@
   src: url('../assets/fonts/literata.ttf') format('truetype');
   font-weight: 400 700;
   font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('../assets/fonts/ebgaramond.ttf') format('truetype');
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('../assets/fonts/ebgaramond-italic.ttf') format('truetype');
+  font-weight: 400 800;
+  font-style: italic;
   font-display: swap;
 }
 @font-face {

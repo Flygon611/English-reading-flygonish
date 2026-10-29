@@ -28,9 +28,10 @@
 - 阅读进度、字号、行高、主题（浅色 / 深色 / 跟随系统）都记在本机。
 - **手机端沉浸阅读**：向下滑动时顶栏和文章头一起收起，只在屏幕最顶上留一条细进度条；
   向上滑或回到顶部就恢复。滚动位置和整本书进度都按 500ms 落盘，刷新后接着读，不用再点一次词才恢复灰色标记。
-- **阅读字体可换**：Newsreader（默认阅读体）/ Literata（另一种阅读体）/ JetBrains Mono（等宽连字）/
-  Inter（无衬线）/ 系统衬线 / 自定义本机字体名；标题固定 Fraunces，中文译文用霞鹜文楷。
-  设置里有字体与连字预览。
+- **阅读字体可换**：Newsreader（默认阅读体）/ Literata（另一种阅读体）/
+  **EB Garamond**（旧体衬线，自带 `dlig` 任意连字——选中时自动打开，正文里的 `ct` / `st` / `Th` 会连写）/
+  JetBrains Mono（等宽连字）/ Inter（无衬线）/ 系统衬线 / 自定义本机字体名；
+  标题固定 Fraunces，中文译文用霞鹜文楷。设置里有字体与连字预览（`fi fl ffi ffl ct st`）。
 - 可选「词级下划线」：按单词所属**最低门槛**词库着色（四级青 / 六级蓝 / 专四琥珀 / 专八紫，
   雅思托福灰），功能词不标；默认关闭，避免干扰阅读。
 
@@ -163,7 +164,7 @@ DeepReadEnglish/
 | 音标 / 中文释义 / 词形 / 例句 | [skywind3000/ECDICT](https://github.com/skywind3000/ECDICT) | MIT |
 | 词根词缀表 | DSH_learninguse 项目整理 | 随项目 |
 | 字体 Fraunces / Newsreader / Inter / 霞鹜文楷 | 参考站字体文件（用户授权复用）+ Google Fonts | SIL OFL 1.1 |
-| 字体 Literata / JetBrains Mono | [google/fonts](https://github.com/google/fonts) | SIL OFL 1.1 |
+| 字体 Literata / EB Garamond / JetBrains Mono | [google/fonts](https://github.com/google/fonts) | SIL OFL 1.1 |
 | 图标 | 手写内联 SVG | 本项目 |
 | 代码与界面 | 本项目原创 | MIT |
 

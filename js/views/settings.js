@@ -49,6 +49,7 @@
       [
         ['newsreader', 'Newsreader · 默认阅读体'],
         ['literata', 'Literata · 阅读体'],
+        ['garamond', 'EB Garamond · 旧体衬线 + 连字'],
         ['mono', 'JetBrains Mono · 等宽连字'],
         ['sans', 'Inter · 无衬线'],
         ['system', '系统衬线（不加载字体）'],
@@ -67,9 +68,9 @@
     );
     var sample = h('div', { class: 'font-sample' },
       h('p', { class: 'font-sample__display' }, '深读 DeepRead'),
-      h('p', {}, 'The quick brown fox jumps over the lazy dog. 0123456789'),
+      h('p', {}, 'The quick brown fox jumps over the lazy dog. act stop affluent Th 0123456789'),
       h('p', { class: 'font-sample__zh' }, '中文译文（霞鹜文楷）：把文章放进来，慢慢读。'),
-      h('p', { class: 'font-sample__hint' }, '连字预览：fi fl ffi ffl · → ≠ ≤ ≥')
+      h('p', { class: 'font-sample__hint' }, '连字预览：fi fl ffi ffl ct st · → ≠ ≤ ≥（EB Garamond 会连 ct / st）')
     );
     var lineRange = h('input', {
       type: 'range', id: 'set-line', min: '1.6', max: '2.2', step: '0.05', value: String(s.lineHeight),

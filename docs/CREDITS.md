@@ -45,6 +45,7 @@
 | 界面 / 音标 | Inter | Google Fonts（参考站同款，用户明确授权复用） | OFL 1.1 |
 | 中文译文 | 霞鹜文楷 LXGW WenKai | [lxgw/LxgwWenKai](https://github.com/lxgw/LxgwWenKai)（参考站同款，用户明确授权复用） | OFL 1.1 |
 | 备选阅读体 | Literata | [google/fonts](https://github.com/google/fonts) | OFL 1.1 |
+| 备选阅读体 | EB Garamond | [google/fonts](https://github.com/google/fonts)（可变字体，含 dlig / hlig / smcp 等 32 个 OpenType 特性） | OFL 1.1 |
 | 等宽 / 连字 | JetBrains Mono | [google/fonts](https://github.com/google/fonts) | OFL 1.1 |
 
 字体文件从参考站 `Again_PokemonEnglish/assets/fonts` 复制（用户允许「字体可以照抄」）以及 Google Fonts 仓库下载，
