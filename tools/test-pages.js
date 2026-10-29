@@ -139,6 +139,17 @@ async function fetchJSON(url, init) {
     const fontOk = await cdp.ev('(function(){try{return document.fonts.check("16px Fraunces") && document.fonts.check("16px Newsreader");}catch(e){return false;}})()');
     check('Fraunces / Newsreader 字体已加载', fontOk === true, String(fontOk));
 
+    /* EB Garamond：完整可变字体（2 个文件约 1.6 MB）也要随站点发出去，且 dlig 要打开 */
+    await cdp.ev('(function(){var s=DR.store.settings();s.readFont="garamond";DR.store.saveSettings(s);DR.settings.apply();return true;})()');
+    let gara = null;
+    for (let i = 0; i < 40; i++) {
+      await sleep(400);
+      gara = await cdp.ev('(function(){try{var a=document.querySelector("#article-body");var cs=a?getComputedStyle(a):null;return {check:document.fonts.check(\'20px "EB Garamond"\'), fam:cs?cs.fontFamily:"", ffs:cs?cs.fontFeatureSettings:""};}catch(e){return null;}})()');
+      if (gara && gara.check) break;
+    }
+    check('线上 EB Garamond 可加载且 dlig 已打开', !!gara && gara.check === true && /EB Garamond/.test(gara.fam || '') && /dlig/i.test(gara.ffs || ''), JSON.stringify(gara));
+    await cdp.ev('(function(){var s=DR.store.settings();s.readFont="newsreader";DR.store.saveSettings(s);DR.settings.apply();return true;})()');
+
     /* 示例文本 + 查词 */
     await cdp.ev('(function(){var b=document.querySelector("#btn-load-sample"); if(b) b.click(); return true;})()');
     await sleep(700);
